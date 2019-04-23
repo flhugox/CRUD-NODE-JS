@@ -1,26 +1,33 @@
 var express = require('express');
-var app = express();
-// getting-started.js
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/27017', { useNewUrlParser: true });
+var bodyParser = require('body-parser');
+var app = express();
+var appRouter = require('./routes/app');
+var usuarioRouter = require('./routes/usuario');;
+// getting-started.js
+
+mongoose.connect('mongodb://localhost:27017/dbhospital', { useNewUrlParser: true });
+mongoose.set('useCreateIndex', true);
+
+
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
+
 db.once('open', function() {
     // we're connected!
     console.log('Dbconected',
         'online');
 });
 
-app.get('/', (req, res, next) => {
-    res.status(200).json({
-        ok: true,
-        mensaje: 'Peticion realizada correctamente'
-    })
-});
+//rutas
+
+app.use('/usuario', usuarioRouter);
+app.use('/', appRouter);
 
 app.listen(3000, () => {
-
     console.log('Express Server Puerto 3000',
         'online');
 })
